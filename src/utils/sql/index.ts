@@ -1,7 +1,13 @@
 export function sql(parts: TemplateStringsArray, ...variables: unknown[]) {
-  return parts.reduce<{ sql: string; args: string[] }>((acc, part, i) => {
-    acc.sql = acc.sql + part + "?";
-    acc.args.push(String(variables[i]));
+  const statement = parts.reduce<{ sql: string; args: string[] }>((acc, part, i) => {
+    const argument = variables[i];
+    acc.sql += part;
+    if (argument !== undefined) {
+      acc.sql += "?";
+      acc.args.push(String(argument));
+    }
     return acc;
-  }, { sql: "", args: [] })
+  }, { sql: "", args: [] });
+  console.log({statement})
+  return statement;
 }
