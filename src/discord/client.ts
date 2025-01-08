@@ -13,7 +13,7 @@ export async function authenticateClient(client: Client) {
       resolve();
     });
     client.once("error", (error) => {
-      console.log("Failed to authenticate client.");
+      console.error(error);
       reject(error)
     });
     client.login(DISCORD_TOKEN);
