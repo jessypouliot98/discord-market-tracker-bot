@@ -8,3 +8,5 @@ export const zTracker = z.object({
   url: z.string().url(),
   channel_id: z.string(),
 });
+
+export type Tracker = z.infer<typeof zTracker>;

@@ -179,3 +179,6 @@ dist
 *.db-client_wal_index
 *.db-shm
 *.db-wal
+
+# Debug
+.debug
