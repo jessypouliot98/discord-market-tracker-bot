@@ -3,7 +3,7 @@ import { model } from "../../schema-generator";
 
 export const zListing = z.object({
   id: model.pkey(),
-  tracker_id: z.number(),
+  tracker_id: model.fkey("tracker", "id", { onDelete: "CASCADE" }),
   listing_id: z.string(),
   title: z.string(),
   price: z.string(),

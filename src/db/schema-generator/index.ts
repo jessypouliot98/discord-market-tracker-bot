@@ -4,17 +4,20 @@ export namespace model {
 
   const flags = {
     primaryKey: new WeakSet<z.ZodType>(),
+    foreignKey: new WeakSet<z.ZodType>(),
     autoIncrement: new WeakSet<z.ZodType>(),
   }
 
   const customs = new WeakMap<z.ZodType, string>();
 
   export function apply<T extends z.ZodType>(schema: T, params: {
-    flags: Array<keyof typeof flags>;
+    flags?: Array<keyof typeof flags>;
     custom?: string;
   }) {
-    for (const flag of params.flags) {
-      flags[flag as keyof typeof flags].add(schema);
+    if (params?.flags) {
+      for (const flag of params.flags) {
+        flags[flag as keyof typeof flags].add(schema);
+      }
     }
     if (params.custom !== undefined) {
       customs.set(schema, params.custom);
@@ -23,7 +26,13 @@ export namespace model {
   }
 
   export function pkey() {
-    return apply(z.number().optional(), { flags: ["primaryKey", "autoIncrement"] })
+    return apply(z.number(), { flags: ["primaryKey", "autoIncrement"] })
+  }
+
+  export function fkey(table: string, column: string, options: { onDelete: "CASCADE" }) {
+    return apply(z.number(), {
+      custom: `REFERENCES ${table}(${column}) ON DELETE ${options.onDelete}`,
+    })
   }
 
   export function isPrimaryKey(schema: z.ZodType) {
