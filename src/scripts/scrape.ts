@@ -73,7 +73,6 @@ for (const tracker of trackers) {
         ${listing.url}
       )
     `);
-    break;
   }
 }
 
