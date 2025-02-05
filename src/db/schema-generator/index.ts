@@ -77,7 +77,7 @@ function validatorToColumn(column: string, validator: z.ZodTypeAny) {
   }
 
   if (options?.checkIn) {
-    builder.push(`CHECK( ${column} IN (${options.checkIn}) )`);
+    builder.push(`CHECK( "${column}" IN (${options.checkIn}) )`);
   }
 
   const custom = model.getCustom(validator);
@@ -93,7 +93,7 @@ export function createTableFromSchema(table: string, schema: z.ZodObject<z.ZodRa
   for (const [column, validator] of Object.entries(schema.shape)) {
     builder.push(validatorToColumn(column, validator));
   }
-  const sql = `CREATE TABLE ${table} (
+  const sql = `CREATE TABLE "${table}" (
     ${builder.join(",\n")}
   )`;
   return sql;

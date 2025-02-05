@@ -23,10 +23,9 @@ export async function authenticateClient(client: Client) {
 export function setupClientCommands(client: Client) {
   const handler = async (interaction: Interaction) => {
     if (!("commandName" in interaction)) return;
-    if (!(interaction.commandName in commands)) return;
-    const command = commands[interaction.commandName as keyof typeof commands];
-    if (!("action" in command)) return;
-    await command.action(interaction);
+    const command = commands.find(({ command }) => command.name === interaction.commandName);
+    if (!command) return;
+    await command.execute(interaction, client);
   }
   client.on("interactionCreate", handler);
   return () => client.off("interactionCreate", handler);

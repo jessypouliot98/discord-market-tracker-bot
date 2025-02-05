@@ -6,4 +6,5 @@ export const zTracker = z.object({
   name: z.string(),
   type: z.enum(["facebook-marketplace"]),
   url: z.string().url(),
+  channel_id: z.string(),
 });
