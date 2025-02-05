@@ -7,6 +7,7 @@ import { scrapeFacebookMarketplace } from "../scrapper/facebook-marketplace";
 import type { Listing } from "../db/app/listing/model.ts";
 import { authenticateClient, createClient, setupClientCommands } from "../discord/client.ts";
 import { queryTrackedListingsByMatchingIds } from "../db/app/listing/query-tracked-listings-by-matching-ids.ts";
+import { EmbedBuilder } from "discord.js";
 
 const discordClient = createClient();
 await authenticateClient(discordClient);
@@ -48,14 +49,17 @@ for (const tracker of trackers) {
     console.log(`Adding listing:${listing.listing_id}`);
     setListings.add(listing.listing_id);
 
+    if (!listing.thumbnail_url) throw new Error(`No thumbnail URL found for tracker ${tracker.id}`);
+    const imageEmbed = new EmbedBuilder()
+      .setImage(listing.thumbnail_url)
+
     await channel.send({
       content: [
-        listing.title,
+        `[${listing.title}](${listing.url})`,
         listing.price,
         listing.location,
-        listing.url,
       ].join("\n"),
-      embeds: [],
+      embeds: [imageEmbed],
     });
 
     await sqlClient.execute(sql`
@@ -69,6 +73,7 @@ for (const tracker of trackers) {
         ${listing.url}
       )
     `);
+    break;
   }
 }
 

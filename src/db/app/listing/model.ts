@@ -9,6 +9,7 @@ export const zListing = z.object({
   price: z.string(),
   location: z.string().nullish(),
   url: z.string().url(),
+  thumbnail_url: z.string().url().nullish(),
 });
 
 export type Listing = z.infer<typeof zListing>;
