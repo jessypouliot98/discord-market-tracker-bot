@@ -1,24 +1,15 @@
-import { chromium } from "playwright";
-import { sqlClient } from "../db/sql/client.ts";
-import { sql } from "../utils/sql";
-import { z } from "zod";
-import { zTracker } from "../db/app/tracker/model.ts";
 import { authenticateClient, createClient } from "../discord/client.ts";
 import { scrapeTracker } from "../scrapper/scrapeTracker.ts";
+import { browserPromise } from "../browser.ts";
+import { queryAllTrackers } from "../db/app/tracker/queries/queryAllTrackers.ts";
 
 const discordClient = createClient();
 await authenticateClient(discordClient);
-const browser = await chromium.launch({});
-
-const resultSet = await sqlClient.execute(sql`
-  SELECT *
-  FROM tracker
-`);
-const trackers = z.array(zTracker).parse(resultSet.rows);
+const browser = await browserPromise;
 
 const page = await browser.newPage();
 
-for (const tracker of trackers) {
+for (const tracker of await queryAllTrackers()) {
   await scrapeTracker({
     tracker,
     discordClient,

@@ -4,7 +4,7 @@ import { sql } from "../utils/sql";
 import { type Tracker } from "../db/app/tracker/model.ts";
 import { scrapeFacebookMarketplace } from "./facebook-marketplace";
 import type { Listing } from "../db/app/listing/model.ts";
-import { queryTrackedListingsByMatchingIds } from "../db/app/listing/query-tracked-listings-by-matching-ids.ts";
+import { queryTrackedListingsByMatchingIds } from "../db/app/listing/queries/queryTrackedListingsByMatchingIds.ts";
 import { type Client, EmbedBuilder } from "discord.js";
 
 export async function scrapeTracker(params: {

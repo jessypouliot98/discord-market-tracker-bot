@@ -1,14 +1,13 @@
 import type { Page } from "playwright";
 import type { Tracker } from "../../db/app/tracker/model.ts";
-import { screenshotDebug } from "../../utils/scrapper/screenshotDebug.ts";
 import type { Listing } from "../../db/app/listing/model.ts";
 
 export async function scrapeFacebookMarketplace(page: Page, tracker: Tracker) {
   await page.goto(tracker.url);
 
-  await screenshotDebug(page, "a");
-  await page.click("[role=dialog] [aria-label=Close]");
-  await screenshotDebug(page, "b");
+  // await screenshotDebug(page, "a");
+  // await page.click("[role=dialog] [aria-label=Close]");
+  // await screenshotDebug(page, "b");
 
   const collectionLocator = page.locator("[aria-label='Collection of Marketplace items']");
   const itemsLocator = collectionLocator.locator("[role=link]");

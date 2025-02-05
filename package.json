@@ -5,8 +5,8 @@
   "scripts": {
     "migrate": "bun src/scripts/migrate.ts",
     "scrape": "bun src/scripts/scrape.ts",
-    "start": "bun index.ts",
-    "dev": "bun --watch index.ts"
+    "start": "bun src/main.ts",
+    "dev": "bun --watch src/main.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"

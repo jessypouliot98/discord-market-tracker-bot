@@ -15,7 +15,6 @@ WORKDIR /usr/src/app
 COPY . .
 
 RUN bun install
-RUN bunx playwright install-deps chromium
 
 ##############
 ### RUNNER ###
@@ -25,7 +24,10 @@ FROM base as runner
 
 WORKDIR /usr/src/app
 
+RUN bunx playwright install-deps
+RUN bunx playwright install
+
 COPY --from=installer /usr/src/app .
 
-CMD bun run migrate && bun run start
+CMD bun run migrate && bun start
 

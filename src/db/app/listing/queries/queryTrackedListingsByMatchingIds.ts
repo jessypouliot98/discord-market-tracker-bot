@@ -1,7 +1,7 @@
-import { sqlClient } from "../../sql/client.ts";
-import { sql } from "../../../utils/sql";
+import { sqlClient } from "../../../sql/client.ts";
+import { sql } from "../../../../utils/sql";
 import { z } from "zod";
-import { zListing } from "./model.ts";
+import { zListing } from "../model.ts";
 
 export async function queryTrackedListingsByMatchingIds(trackerId: number, listingIds: string[]) {
   const result = await sqlClient.execute(sql`

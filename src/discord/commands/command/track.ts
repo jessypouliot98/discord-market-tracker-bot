@@ -1,11 +1,15 @@
-import { ChannelType, Client, type Interaction, SlashCommandBuilder } from "discord.js";
+import {
+  ChannelType,
+  Client,
+  type Interaction,
+  PermissionsBitField,
+  SlashCommandBuilder
+} from "discord.js";
 import { sqlClient } from "../../../db/sql/client.ts";
 import { sql } from "../../../utils/sql";
 import { type Tracker } from "../../../db/app/tracker/model.ts";
 import { scrapeTracker } from "../../../scrapper/scrapeTracker.ts";
-import { chromium } from "playwright";
-
-const browser = chromium.launch({});
+import { browserPromise } from "../../../browser.ts";
 
 export const command = new SlashCommandBuilder()
   .setName("track")
@@ -38,6 +42,16 @@ export async function execute(interaction: Interaction, client: Client) {
     name: interaction.options.getString("name") ?? "new-tracker",
     type: ChannelType.GuildText,
     topic: url,
+    permissionOverwrites: [
+      {
+        id: interaction.guild.id,
+        deny: [PermissionsBitField.Flags.ViewChannel],
+      },
+      {
+        id: interaction.user.id,
+        allow: [PermissionsBitField.Flags.ViewChannel],
+      },
+    ]
   });
   const tracker: Tracker = {
     name: newChannel.name,
@@ -63,7 +77,8 @@ export async function execute(interaction: Interaction, client: Client) {
     content: `Tracking [${newChannel.name}](${url})`,
   })
 
-  const page = await (await browser).newPage();
+  const browser = await browserPromise;
+  const page = await browser.newPage();
 
   try {
     await scrapeTracker({
