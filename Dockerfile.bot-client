@@ -1,0 +1,33 @@
+############
+### BASE ###
+############
+
+FROM oven/bun:1.2.2 as base
+
+#################
+### INSTALLER ###
+#################
+
+FROM base as installer
+
+WORKDIR /usr/src/app
+
+COPY . .
+
+RUN bun install
+
+##############
+### RUNNER ###
+##############
+
+FROM base as runner
+
+WORKDIR /usr/src/app
+
+RUN bunx playwright install-deps
+RUN bunx playwright install
+
+COPY --from=installer /usr/src/app .
+
+CMD bun run migrate && bun start
+
