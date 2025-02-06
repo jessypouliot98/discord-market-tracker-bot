@@ -29,7 +29,7 @@ export async function execute(interaction: Interaction, client: Client) {
     throw new Error("tracker not found");
   }
 
-  if (tracker.author_id !== interaction.user.id) {
+  if (tracker.owner_id !== interaction.user.id) {
     await interaction.reply(`Uh oh! You're must be the tracker owner to destroy it`)
     return;
   }

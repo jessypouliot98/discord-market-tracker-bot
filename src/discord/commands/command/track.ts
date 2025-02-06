@@ -58,15 +58,16 @@ export async function execute(interaction: Interaction, client: Client) {
     type: "facebook-marketplace",
     url,
     channel_id: newChannel.id,
-    author_id: interaction.user.id,
+    owner_id: interaction.user.id,
   }
   const insertTrackerResult = await sqlClient.execute(sql`
-    INSERT INTO tracker (name, type, url, channel_id)
+    INSERT INTO tracker (name, type, url, channel_id, owner_id)
     VALUES (
       ${trackerData.name},
       ${trackerData.type},
       ${trackerData.url},
-      ${trackerData.channel_id}
+      ${trackerData.channel_id},
+      ${trackerData.owner_id}
     )
     RETURNING tracker.id
   `);
