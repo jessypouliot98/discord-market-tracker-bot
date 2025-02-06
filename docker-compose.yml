@@ -4,4 +4,4 @@ services:
       - .env
     build:
       context: .
-      dockerfile: Dockerfile.bot-client
+      dockerfile: Dockerfile.bbot-client
