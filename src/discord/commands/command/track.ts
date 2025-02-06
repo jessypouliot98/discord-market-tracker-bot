@@ -53,25 +53,28 @@ export async function execute(interaction: Interaction, client: Client) {
       },
     ]
   });
-  const tracker: Tracker = {
+  const trackerData: Omit<Tracker, "id"> = {
     name: newChannel.name,
     type: "facebook-marketplace",
     url,
     channel_id: newChannel.id,
+    author_id: interaction.user.id,
   }
   const insertTrackerResult = await sqlClient.execute(sql`
     INSERT INTO tracker (name, type, url, channel_id)
     VALUES (
-      ${tracker.name},
-      ${tracker.type},
-      ${tracker.url},
-      ${tracker.channel_id}
+      ${trackerData.name},
+      ${trackerData.type},
+      ${trackerData.url},
+      ${trackerData.channel_id}
     )
     RETURNING tracker.id
   `);
-  if (typeof insertTrackerResult.rows[0]?.id === "number") {
-    tracker.id = insertTrackerResult.rows[0].id;
-  }
+  const insertedTrackerId = insertTrackerResult.rows[0]?.id;
+  if (typeof insertedTrackerId !== "number") throw new Error("Inserted tracker id is expected to be a string");
+  const tracker: Tracker = Object.assign(trackerData, {
+    id: insertedTrackerId,
+  })
 
   await interaction.reply({
     content: `Tracking [${newChannel.name}](${url})`,
