@@ -3,7 +3,6 @@ import {
   type Interaction,
   SlashCommandBuilder
 } from "discord.js";
-import { deleteTrackerByChannelId } from "../../../db/app/tracker/mutations/deleteTrackerByChannelId.ts";
 import { queryTrackerByChannelId } from "../../../db/app/tracker/queries/queryTrackerByChannelId.ts";
 
 export const command = new SlashCommandBuilder()
