@@ -29,5 +29,5 @@ RUN bunx playwright install
 
 COPY --from=installer /usr/src/app .
 
-CMD bun run migrate && bun start
+CMD bun db:push && bun start
 
