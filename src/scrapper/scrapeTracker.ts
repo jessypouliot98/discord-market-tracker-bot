@@ -57,7 +57,7 @@ export async function scrapeTracker(params: {
       await sqlTransaction.commit();
       console.log(`Added listing:${listing.listing_id}`);
     } catch (error) {
-      console.log(`Skipped listing:${listing.listing_id}`);
+      console.log(`Skipped listing:${listing.listing_id}`, { error });
       await Promise.all([
         await message?.delete(),
         await sqlTransaction.rollback(),

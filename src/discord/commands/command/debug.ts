@@ -40,7 +40,7 @@ export async function execute(interaction: Interaction, client: Client) {
   builder.push(`scraper_cron_tab: ${SCRAPER_CRONTAB}`)
 
   await interaction.reply({
-    content: builder.join("\n"),
+    content: "```\n" + builder.join("\n") + "\n```",
     embeds: [],
   })
 }

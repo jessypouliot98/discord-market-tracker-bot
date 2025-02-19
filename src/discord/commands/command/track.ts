@@ -48,6 +48,10 @@ export async function execute(interaction: Interaction, client: Client) {
         deny: [PermissionsBitField.Flags.ViewChannel],
       },
       {
+        id: client.user!.id,
+        allow: [PermissionsBitField.Flags.ViewChannel],
+      },
+      {
         id: interaction.user.id,
         allow: [PermissionsBitField.Flags.ViewChannel],
       },
@@ -79,6 +83,8 @@ export async function execute(interaction: Interaction, client: Client) {
 
   await interaction.reply({
     content: `Tracking [${newChannel.name}](${url})`,
+    ephemeral: true,
+    embeds: [],
   })
 
   const browser = await browserPromise;
