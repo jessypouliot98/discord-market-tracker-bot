@@ -3,8 +3,8 @@ import {
   type Interaction,
   SlashCommandBuilder
 } from "discord.js";
-import { deleteTrackerByChannelId } from "../../../db/app/tracker/mutations/deleteTrackerByChannelId.ts";
 import { queryTrackerByChannelId } from "../../../db/app/tracker/queries/queryTrackerByChannelId.ts";
+import { SCRAPER_CRONTAB } from "../../../utils/env.ts";
 
 export const command = new SlashCommandBuilder()
   .setName("debug")
@@ -19,8 +19,8 @@ export async function execute(interaction: Interaction, client: Client) {
   }
 
   const builder: string[] = [
-    `guild_id: ${guild.id}`,
     `your_user_id: ${interaction.user.id}`,
+    `guild_id: ${guild.id}`,
   ];
 
   if (interaction.channelId) {
@@ -36,6 +36,8 @@ export async function execute(interaction: Interaction, client: Client) {
   } else {
     builder.push(`channel_id: -`)
   }
+
+  builder.push(`scraper_cron_tab: ${SCRAPER_CRONTAB}`)
 
   await interaction.reply({
     content: builder.join("\n"),

@@ -4,8 +4,7 @@ import { sql } from "../utils/sql";
 import { type Tracker } from "../db/app/tracker/model.ts";
 import { scrapeFacebookMarketplace } from "./facebook-marketplace";
 import type { Listing } from "../db/app/listing/model.ts";
-import { queryTrackedListingsByMatchingIds } from "../db/app/listing/queries/queryTrackedListingsByMatchingIds.ts";
-import { type Client, EmbedBuilder } from "discord.js";
+import { type Client, EmbedBuilder, Message } from "discord.js";
 
 export async function scrapeTracker(params: {
   tracker: Tracker;
@@ -26,43 +25,43 @@ export async function scrapeTracker(params: {
   if (!channel) throw new Error(`No channel found for tracker ${tracker.id}`);
   if (!channel.isSendable()) throw new Error(`No channel found for tracker ${tracker.id}`);
 
-  const prevListings = await queryTrackedListingsByMatchingIds(
-    tracker.id!,
-    listings.map((l) => l.listing_id)
-  );
-  const setListings = new Set(prevListings.map((l) => l.listing_id));
-
   for (const listing of listings) {
-    if (setListings.has(listing.listing_id)) {
-      console.log(`Skipping listing:${listing.listing_id}`);
-      continue;
-    }
-    console.log(`Adding listing:${listing.listing_id}`);
-    setListings.add(listing.listing_id);
-
     if (!listing.thumbnail_url) throw new Error(`No thumbnail URL found for tracker ${tracker.id}`);
-    const imageEmbed = new EmbedBuilder()
-      .setImage(listing.thumbnail_url)
 
-    await channel.send({
-      content: [
-        `[${listing.title}](${listing.url})`,
-        listing.price,
-        listing.location,
-      ].join("\n"),
-      embeds: [imageEmbed],
-    });
+    const sqlTransaction = await sqlClient.transaction("write");
+    let message: Message | undefined;
+    try {
+      await sqlTransaction.execute(sql`
+        INSERT INTO listing (tracker_id, listing_id, title, price, location, url)
+        VALUES (
+          ${tracker.id},
+          ${listing.listing_id},
+          ${listing.title},
+          ${listing.price},
+          ${listing.location},
+          ${listing.url}
+        )
+      `);
 
-    await sqlClient.execute(sql`
-      INSERT INTO listing (tracker_id, listing_id, title, price, location, url)
-      VALUES (
-        ${tracker.id},
-        ${listing.listing_id},
-        ${listing.title},
-        ${listing.price},
-        ${listing.location},
-        ${listing.url}
-      )
-    `);
+      const imageEmbed = new EmbedBuilder()
+        .setImage(listing.thumbnail_url)
+      message = await channel.send({
+        content: [
+          `[${listing.title}](${listing.url})`,
+          listing.price,
+          listing.location,
+        ].join("\n"),
+        embeds: [imageEmbed],
+      });
+
+      await sqlTransaction.commit();
+      console.log(`Added listing:${listing.listing_id}`);
+    } catch (error) {
+      console.log(`Skipped listing:${listing.listing_id}`);
+      await Promise.all([
+        await message?.delete(),
+        await sqlTransaction.rollback(),
+      ])
+    }
   }
 }
